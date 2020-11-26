@@ -73,7 +73,7 @@ class Order(models.Model):
     address = models.CharField(max_length=100, verbose_name='адрес доставки')
 
     def __str__(self):
-        return f"{self.id} - {self.lastname} - {self.phonenumber} - {self.address}"
+        return f"{self.lastname} - {self.address}"
 
     class Meta:
         verbose_name = 'заказ'

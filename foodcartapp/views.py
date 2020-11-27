@@ -2,10 +2,13 @@ import json
 
 
 from django.http import JsonResponse
+from django.core.exceptions import ValidationError
 from django.templatetags.static import static
 
 
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
+from rest_framework.response import Response
 
 from .models import Product, Order, OrderItem
 
@@ -65,12 +68,30 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     order_data = request.data
+
+    if not isinstance(order_data['products'], list) or 'products' not in order_data:
+        return Response(
+            data={'error': 'product key not presented or not list'},
+            status=400
+        )
+
+    if not order_data['products']:
+        return Response(
+            data={'error': 'products are empty'},
+            status=400
+        )
+
     order = Order.objects.create(
         firstname=order_data['firstname'],
         lastname=order_data['lastname'],
         address=order_data['address'],
         phonenumber=order_data['phonenumber']
     )
+
     for order_item in order_data['products']:
-        OrderItem.objects.create(order=order, item_id=order_item['product'], count=order_item['quantity'])
+        OrderItem.objects.create(
+            order=order,
+            item_id=order_item['product'],
+            count=order_item['quantity']
+        )
     return JsonResponse({})

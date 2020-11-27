@@ -69,17 +69,45 @@ def product_list_api(request):
 def register_order(request):
     order_data = request.data
 
-    if not isinstance(order_data['products'], list) or 'products' not in order_data:
+
+    if 'products' not in order_data or not isinstance(order_data['products'], list) :
         return Response(
             data={'error': 'product key not presented or not list'},
             status=400
         )
 
-    if not order_data['products']:
+    if 'firstname' not in order_data:
         return Response(
-            data={'error': 'products are empty'},
+            data={'error': 'firstname not presented'},
             status=400
         )
+
+    if not isinstance(order_data['firstname'], str):
+        return Response(
+            data={'error': 'The key \'firstname\' is not specified or not str'},
+            status=400
+        )
+    for field, value in order_data.items():
+        if not value:
+            return Response(
+                    data={'error': f'{field}  can not be null'},
+                    status=400
+                )
+
+    if len(order_data['phonenumber']) < 1:
+        return Response(
+            data={'error': f'phonenumber  can not be empty'},
+            status=400
+        )
+
+    avaliable_products = list(Product.objects.all().values_list('id', flat=True))
+
+    for order_data in order_data['products']:
+        if order_data['product'] not in avaliable_products:
+            return Response(
+                data={'error': f'unknown id for product'},
+                status=400
+            )
 
     order = Order.objects.create(
         firstname=order_data['firstname'],

@@ -11,6 +11,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from .models import Product, Order, OrderItem
+from .serializers import OrderSerializer, OrderItemSerializer
 
 
 def banners_list_api(request):
@@ -67,59 +68,24 @@ def product_list_api(request):
 
 @api_view(['POST'])
 def register_order(request):
-    order_data = request.data
-
-
-    if 'products' not in order_data or not isinstance(order_data['products'], list) :
-        return Response(
-            data={'error': 'product key not presented or not list'},
-            status=400
-        )
-
-    if 'firstname' not in order_data:
-        return Response(
-            data={'error': 'firstname not presented'},
-            status=400
-        )
-
-    if not isinstance(order_data['firstname'], str):
-        return Response(
-            data={'error': 'The key \'firstname\' is not specified or not str'},
-            status=400
-        )
-    for field, value in order_data.items():
-        if not value:
-            return Response(
-                    data={'error': f'{field}  can not be null'},
-                    status=400
-                )
-
-    if len(order_data['phonenumber']) < 1:
-        return Response(
-            data={'error': f'phonenumber  can not be empty'},
-            status=400
-        )
-
-    avaliable_products = list(Product.objects.all().values_list('id', flat=True))
-
-    for order_data in order_data['products']:
-        if order_data['product'] not in avaliable_products:
-            return Response(
-                data={'error': f'unknown id for product'},
-                status=400
-            )
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
-        firstname=order_data['firstname'],
-        lastname=order_data['lastname'],
-        address=order_data['address'],
-        phonenumber=order_data['phonenumber']
+        firstname=serializer.validated_data['firstname'],
+        lastname=serializer.validated_data['lastname'],
+        address=serializer.validated_data['address'],
+        phonenumber=serializer.validated_data['phonenumber']
     )
 
-    for order_item in order_data['products']:
-        OrderItem.objects.create(
-            order=order,
-            item_id=order_item['product'],
-            count=order_item['quantity']
-        )
-    return JsonResponse({})
+    order_item_fields = serializer.validated_data['products']
+
+    order_items = [
+        OrderItem(
+            order=order, **fields)
+        for fields in order_item_fields
+    ]
+
+    OrderItem.objects.bulk_create(order_items)
+
+    return Response(OrderSerializer(order).data)

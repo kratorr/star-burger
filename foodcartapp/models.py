@@ -82,14 +82,14 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_items')
-    item = models.ForeignKey('Product', on_delete=models.CASCADE, related_name='order_items')
-    count = models.PositiveIntegerField(verbose_name='количество', validators=[
+    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(verbose_name='количество', validators=[
         MinValueValidator(1), MaxValueValidator(50)
         ]
     )
 
     def __str__(self):
-        return f"Order: {self.order.id} - {self.item.name} - {self.count}"
+        return f"Order: {self.order.id} - {self.product.name} - {self.quantity}"
 
     class Meta:
         verbose_name = 'пункт заказа'

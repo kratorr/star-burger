@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 
-from django.db.models import Sum
+from django.db.models import Sum, F
 from django.core.validators import MinValueValidator, MaxValueValidator
 
 
@@ -69,11 +69,20 @@ class RestaurantMenuItem(models.Model):
         ]
 
 
+class OrderQuerySet(models.QuerySet):
+
+    def fetch_with_order_cost(self):
+        return self.annotate(
+            order_cost=Sum('order_items__amount')
+        )
+
+
 class Order(models.Model):
     firstname = models.CharField(max_length=50, verbose_name='имя')
     lastname = models.CharField(max_length=50, verbose_name='фамилия')
     phonenumber = models.CharField(max_length=15, verbose_name='телефон')
     address = models.CharField(max_length=100, verbose_name='адрес доставки')
+    objects = OrderQuerySet.as_manager()
 
     def __str__(self):
         return f"{self.lastname} - {self.address}"
@@ -81,9 +90,6 @@ class Order(models.Model):
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
-
-    def order_cost(self):
-        return self.objects.aggregate(xsum=Sum('order_items__price'))
 
 
 class OrderItem(models.Model):
@@ -93,7 +99,7 @@ class OrderItem(models.Model):
         MinValueValidator(1), MaxValueValidator(50)
         ]
     )
-    price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=2, null=True)
+    amount = models.DecimalField(verbose_name='сумма', max_digits=8, decimal_places=2, null=False)
 
     def __str__(self):
         return f"Order: {self.order.id} - {self.product.name} - {self.quantity}"

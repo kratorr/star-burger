@@ -99,5 +99,5 @@ def view_restaurants(request):
 def view_orders(request):
     orders = Order.objects.all().fetch_with_order_cost()
     return render(request, template_name='order_items.html', context={
-        'order_items': orders
+        'orders': orders
     })

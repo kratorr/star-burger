@@ -93,7 +93,7 @@ class OrderItem(models.Model):
         MinValueValidator(1), MaxValueValidator(50)
         ]
     )
-   # price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=2, null=True)
+    price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=2, null=True)
 
     def __str__(self):
         return f"Order: {self.order.id} - {self.product.name} - {self.quantity}"

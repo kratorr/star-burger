@@ -1,6 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+
+from django.db.models import Sum
 from django.core.validators import MinValueValidator, MaxValueValidator
+
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
@@ -79,6 +82,9 @@ class Order(models.Model):
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
 
+    def order_cost(self):
+        return self.objects.aggregate(xsum=Sum('order_items__price'))
+
 
 class OrderItem(models.Model):
     order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_items')
@@ -87,6 +93,7 @@ class OrderItem(models.Model):
         MinValueValidator(1), MaxValueValidator(50)
         ]
     )
+   # price = models.DecimalField(verbose_name='цена', max_digits=8, decimal_places=2, null=True)
 
     def __str__(self):
         return f"Order: {self.order.id} - {self.product.name} - {self.quantity}"

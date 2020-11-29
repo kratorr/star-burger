@@ -3,6 +3,7 @@ import json
 
 from django.http import JsonResponse
 from django.core.exceptions import ValidationError
+from django.db.transaction import atomic
 from django.templatetags.static import static
 
 
@@ -66,6 +67,7 @@ def product_list_api(request):
     })
 
 
+@atomic()
 @api_view(['POST'])
 def register_order(request):
     serializer = OrderSerializer(data=request.data)

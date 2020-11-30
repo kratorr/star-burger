@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum, F
 from django.core.validators import MinValueValidator, MaxValueValidator
 
+from django.utils import timezone
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
@@ -88,8 +89,11 @@ class Order(models.Model):
     lastname = models.CharField(max_length=50, verbose_name='фамилия')
     phonenumber = models.CharField(max_length=15, verbose_name='телефон')
     address = models.CharField(max_length=100, verbose_name='адрес доставки')
-    status = models.CharField(max_length=15, choices=STATUS, default='NEW', verbose_name='Статус')
-    comment = models.TextField(verbose_name='Комментарий', blank=True)
+    status = models.CharField(max_length=15, choices=STATUS, default='NEW', verbose_name='статус')
+    comment = models.TextField(verbose_name='комментарий', blank=True)
+    create_at = models.DateTimeField(default=timezone.now, verbose_name='время получения заказа')
+    called_at = models.DateTimeField(verbose_name='время звонка менеджера', blank=True, null=True)
+    delivered_at = models.DateTimeField(verbose_name='время доставки', blank=True, null=True)
 
     objects = OrderQuerySet.as_manager()
 

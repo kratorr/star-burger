@@ -8,8 +8,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
 
-from foodcartapp.models import Product, Restaurant, Order
+from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
+from collections import defaultdict
 
 class Login(forms.Form):
     username = forms.CharField(
@@ -97,7 +98,22 @@ def view_restaurants(request):
 
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
-    orders = Order.objects.all().fetch_with_order_cost()
+    restaurants_items = RestaurantMenuItem.objects.filter(availability=True).select_related('restaurant', 'product')
+    restraunts_menu = defaultdict(set)
+    for item in restaurants_items:
+        restraunts_menu[(item.restaurant.id, item.restaurant.name)].add(item.product.id)
+
+    orders = Order.objects.all().fetch_with_order_cost().prefetch_related('order_items__product')
+
+    for order in orders:
+        order.restaurants = []
+        order_products = set(item.product.id for item in order.order_items.all())
+
+        for item in restraunts_menu.items():
+            restaurant, restaurant_products = item
+            if restaurant_products.issubset(order_products):
+                order.restaurants.append(restaurant[1])
+
     return render(request, template_name='order_items.html', context={
         'orders': orders
     })

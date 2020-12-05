@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 from django.utils import timezone
 
+
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
     address = models.CharField('адрес', max_length=100, blank=True)
@@ -79,21 +80,29 @@ class OrderQuerySet(models.QuerySet):
 
 
 class Order(models.Model):
-    STATUS = [
+    STATUSES = [
         ('NEW', 'Необработанный'),
         ('DONE', 'Завершенный'),
         ('IN_PROG', 'Выполняется'),
         ('CANCEL', "Отменён")
     ]
+
+    PAY_METHODS = [
+        ('CASH', 'Наличностью'),
+        ('CARD', 'Электронно')
+    ]
+
     firstname = models.CharField(max_length=50, verbose_name='имя')
     lastname = models.CharField(max_length=50, verbose_name='фамилия')
     phonenumber = models.CharField(max_length=15, verbose_name='телефон')
     address = models.CharField(max_length=100, verbose_name='адрес доставки')
-    status = models.CharField(max_length=15, choices=STATUS, default='NEW', verbose_name='статус')
+    status = models.CharField(max_length=15, choices=STATUSES, default='NEW', verbose_name='статус')
     comment = models.TextField(verbose_name='комментарий', blank=True)
     create_at = models.DateTimeField(default=timezone.now, verbose_name='время получения заказа')
     called_at = models.DateTimeField(verbose_name='время звонка менеджера', blank=True, null=True)
     delivered_at = models.DateTimeField(verbose_name='время доставки', blank=True, null=True)
+    pay_method = models.CharField(max_length=4, choices=PAY_METHODS, verbose_name='способ оплаты', null=True)
+    restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, null=True, blank=False)
 
     objects = OrderQuerySet.as_manager()
 
@@ -116,6 +125,7 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"Order: {self.order.id} - {self.product.name} - {self.quantity}"
+
 
     class Meta:
         verbose_name = 'пункт заказа'

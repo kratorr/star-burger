@@ -2,18 +2,25 @@ import os
 
 import dj_database_url
 
+from pathlib import Path
+from environs import Env
+from dotenv import load_dotenv
+
+load_dotenv()
+
+env = Env()
+env.read_env()
+
+DEBUG = env.bool('DEBUG', default=False)
+
+SECRET_KEY = env.str('SECRET_KEY', default='YOU_MUST_CHANGE_IT')
+
+ALLOWED_HOSTS = []
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'j#jww5g6d96bi#kbfpq%mgblr8^yg8$zmmg+c6dm+bxfa*&c+l'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
+GEOCODER_API_KEY = env.str('GEOCODER_API_KEY')
 
 INSTALLED_APPS = [
     'foodcartapp.apps.FoodcartappConfig',
@@ -128,5 +135,3 @@ CACHES = {
         'LOCATION': 'cache_table',
     }
 }
-
-GEOCODER_API_KEY = '4e806d64-6ff6-42f0-9870-723c52b09d83'

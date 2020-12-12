@@ -7,9 +7,10 @@ from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
 from django.conf import settings
-
+from django.core.cache import cache
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
+
 
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
@@ -119,12 +120,19 @@ def view_orders(request):
         for item in restraunts_menu.items():
             restaurant, restaurant_products = item
             _, restaurant_name, restaurant_address = restaurant
-
             if restaurant_products.issubset(order_products):
-                restraunt_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, restaurant_address)
-                customer_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, order.address)
-                distance = d.distance(restraunt_coordinates, customer_coordinates).km
+
+                restaurant_coordinates = cache.get_or_set(
+                    restaurant_address.replace(' ', ''),
+                    fetch_coordinates(settings.GEOCODER_API_KEY, restaurant_address.replace(' ', ''))
+                )
+                customer_coordinates = cache.get_or_set(
+                    order.address.replace(' ', ''),
+                    fetch_coordinates(settings.GEOCODER_API_KEY, order.address.replace(' ', ''))
+                )
+                distance = d.distance(restaurant_coordinates, customer_coordinates).km
                 order.restaurants.append((distance, restaurant_name))
+
         order.restaurants = sorted(order.restaurants, key=lambda restaurant: restaurant[0])
     return render(request, template_name='order_items.html', context={
         'orders': orders

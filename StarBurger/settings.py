@@ -122,4 +122,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "bundles"),
 ]
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'cache_table',
+    }
+}
+
 GEOCODER_API_KEY = '4e806d64-6ff6-42f0-9870-723c52b09d83'

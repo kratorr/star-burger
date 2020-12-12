@@ -1,16 +1,22 @@
+from collections import defaultdict
+
+
 from django import forms
 from django.shortcuts import redirect, render
 from django.views import View
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import user_passes_test
+from django.conf import settings
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 
-
 from foodcartapp.models import Product, Restaurant, Order, RestaurantMenuItem
 
-from collections import defaultdict
+from .utils import fetch_coordinates
+
+from geopy import distance as d
+
 
 class Login(forms.Form):
     username = forms.CharField(
@@ -96,12 +102,13 @@ def view_restaurants(request):
     })
 
 
+
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     restaurants_items = RestaurantMenuItem.objects.filter(availability=True).select_related('restaurant', 'product')
     restraunts_menu = defaultdict(set)
     for item in restaurants_items:
-        restraunts_menu[(item.restaurant.id, item.restaurant.name)].add(item.product.id)
+        restraunts_menu[(item.restaurant.id, item.restaurant.name, item.restaurant.address)].add(item.product.id)
 
     orders = Order.objects.all().fetch_with_order_cost().prefetch_related('order_items__product')
 
@@ -111,9 +118,14 @@ def view_orders(request):
 
         for item in restraunts_menu.items():
             restaurant, restaurant_products = item
-            if restaurant_products.issubset(order_products):
-                order.restaurants.append(restaurant[1])
+            _, restaurant_name, restaurant_address = restaurant
 
+            if restaurant_products.issubset(order_products):
+                restraunt_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, restaurant_address)
+                customer_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, order.address)
+                distance = d.distance(restraunt_coordinates, customer_coordinates).km
+                order.restaurants.append((distance, restaurant_name))
+        order.restaurants = sorted(order.restaurants, key=lambda restaurant: restaurant[0])
     return render(request, template_name='order_items.html', context={
         'orders': orders
     })

@@ -2,9 +2,17 @@ import os
 
 import dj_database_url
 
+<<<<<<< HEAD:StarBurger/settings.py
 from pathlib import Path
 from environs import Env
 from dotenv import load_dotenv
+=======
+from environs import Env
+
+
+env = Env()
+env.read_env()
+>>>>>>> devman/master:star_burger/settings.py
 
 load_dotenv()
 
@@ -15,7 +23,7 @@ DEBUG = env.bool('DEBUG', default=False)
 
 SECRET_KEY = env.str('SECRET_KEY', default='YOU_MUST_CHANGE_IT')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['127.0.0.1', 'localhost'])
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -46,7 +54,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-ROOT_URLCONF = 'StarBurger.urls'
+ROOT_URLCONF = 'star_burger.urls'
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',
@@ -81,7 +89,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'StarBurger.wsgi.application'
+WSGI_APPLICATION = 'star_burger.wsgi.application'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'

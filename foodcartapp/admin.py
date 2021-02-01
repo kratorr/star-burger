@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.shortcuts import reverse
+from django.templatetags.static import static
 from django.utils.html import format_html
 
 from .models import Product
@@ -49,7 +50,7 @@ class ProductAdmin(admin.ModelAdmin):
         # FIXME SQLite can not convert letter case for cyrillic words properly, so search will be buggy.
         # Migration to PostgreSQL is necessary
         'name',
-        'category',
+        'category__name',
     ]
 
     inlines = [
@@ -83,7 +84,7 @@ class ProductAdmin(admin.ModelAdmin):
     class Media:
         css = {
             "all": (
-                "admin/foodcartapp.css",
+                static("admin/foodcartapp.css")
             )
         }
 

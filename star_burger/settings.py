@@ -2,17 +2,10 @@ import os
 
 import dj_database_url
 
-<<<<<<< HEAD:StarBurger/settings.py
 from pathlib import Path
+
 from environs import Env
 from dotenv import load_dotenv
-=======
-from environs import Env
-
-
-env = Env()
-env.read_env()
->>>>>>> devman/master:star_burger/settings.py
 
 load_dotenv()
 

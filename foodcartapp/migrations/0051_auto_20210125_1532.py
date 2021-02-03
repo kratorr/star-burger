@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('foodcartapp', '0035_auto_20200928_1941'),
+        ('foodcartapp', '0050_auto_20201205_1825'),
     ]
 
     operations = [

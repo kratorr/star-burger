@@ -103,8 +103,8 @@ class Order(models.Model):
     create_at = models.DateTimeField(default=timezone.now, verbose_name='время получения заказа')
     called_at = models.DateTimeField(verbose_name='время звонка менеджера', blank=True, null=True)
     delivered_at = models.DateTimeField(verbose_name='время доставки', blank=True, null=True)
-    pay_method = models.CharField(max_length=4, choices=PAY_METHODS, verbose_name='способ оплаты', null=True)
-    restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, null=True, blank=False)
+    pay_method = models.CharField(max_length=4, choices=PAY_METHODS, verbose_name='способ оплаты', blank=True)
+    restaurant = models.ForeignKey('Restaurant', on_delete=models.CASCADE, null=True, blank=False, verbose_name='ресторан')
 
     objects = OrderQuerySet.as_manager()
 
@@ -117,8 +117,8 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_items')
-    product = models.ForeignKey('Product', on_delete=models.CASCADE)
+    order = models.ForeignKey('Order', on_delete=models.CASCADE, related_name='order_items', verbose_name='заказ')
+    product = models.ForeignKey('Product', on_delete=models.CASCADE, elated_name='order_items', verbose_name='товар')
     quantity = models.PositiveIntegerField(verbose_name='количество', validators=[
         MinValueValidator(1), MaxValueValidator(50)
         ]

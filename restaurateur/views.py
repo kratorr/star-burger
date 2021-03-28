@@ -122,14 +122,21 @@ def view_orders(request):
             _, restaurant_name, restaurant_address = restaurant
             if restaurant_products.issubset(order_products):
 
-                restaurant_coordinates = cache.get_or_set(
-                    restaurant_address.replace(' ', ''),
-                    fetch_coordinates(settings.GEOCODER_API_KEY, restaurant_address.replace(' ', ''))
-                )
-                customer_coordinates = cache.get_or_set(
-                    order.address.replace(' ', ''),
-                    fetch_coordinates(settings.GEOCODER_API_KEY, order.address.replace(' ', ''))
-                )
+                restaurant_cache_key = restaurant_address.replace(' ', '')
+               # print(restaurant_cache_key)
+
+                restaurant_coordinates = cache.get(restaurant_cache_key)
+                if not restaurant_coordinates:
+                    restaurant_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, restaurant_address)
+                    cache.set(restaurant_cache_key, restaurant_coordinates)
+
+                customer_cache_key = order.address.replace(' ', '')
+
+                customer_coordinates = cache.get(customer_cache_key)
+                if not customer_coordinates:
+                    customer_coordinates = fetch_coordinates(settings.GEOCODER_API_KEY, order.address)
+                    cache.set(customer_cache_key, customer_coordinates)
+
                 distance = d.distance(restaurant_coordinates, customer_coordinates).km
                 order.restaurants.append((distance, restaurant_name))
 

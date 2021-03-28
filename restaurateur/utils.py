@@ -2,6 +2,7 @@ import requests
 
 
 def fetch_coordinates(apikey, place):
+    print('fetch', place)
     base_url = "https://geocode-maps.yandex.ru/1.x"
     params = {"geocode": place, "apikey": apikey, "format": "json"}
     response = requests.get(base_url, params=params)

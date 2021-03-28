@@ -71,6 +71,7 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     serializer = OrderSerializer(data=request.data)
+
     serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
@@ -85,7 +86,7 @@ def register_order(request):
     order_items = [
         OrderItem(
             order=order,
-            amount=product['quantity'] * product['product'].price,
+            total_price=product['quantity'] * product['product'].price,
             **product)
         for product in products
     ]

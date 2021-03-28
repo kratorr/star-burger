@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'phonenumber_field',
     'rest_framework',
     'debug_toolbar',
 ]
@@ -136,3 +137,5 @@ CACHES = {
         'LOCATION': 'cache_table',
     }
 }
+
+PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'

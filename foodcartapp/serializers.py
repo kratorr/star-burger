@@ -3,7 +3,7 @@ from rest_framework.serializers import CharField
 from rest_framework.validators import ValidationError
 
 
-from .models import  Order, OrderItem
+from .models import Order, OrderItem
 
 
 class OrderItemSerializer(ModelSerializer):
@@ -13,12 +13,7 @@ class OrderItemSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OrderItemSerializer(many=True, write_only=True)
-
-    def validate_products(self, value):
-        if not len(value):
-            raise ValidationError('Это поле не может быть пустым')
-        return value
+    products = OrderItemSerializer(many=True, write_only=True, allow_empty=False)
 
     class Meta:
         model = Order

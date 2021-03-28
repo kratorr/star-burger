@@ -6,6 +6,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 
 from django.utils import timezone
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
@@ -77,7 +79,7 @@ class OrderQuerySet(models.QuerySet):
 
     def fetch_with_order_cost(self):
         return self.annotate(
-            order_cost=Sum('order_items__amount')
+            order_cost=Sum('order_items__total_price')
         )
 
 
@@ -96,7 +98,7 @@ class Order(models.Model):
 
     firstname = models.CharField(max_length=50, verbose_name='имя')
     lastname = models.CharField(max_length=50, verbose_name='фамилия')
-    phonenumber = models.CharField(max_length=15, verbose_name='телефон')
+    phonenumber = PhoneNumberField(verbose_name='телефон')
     address = models.CharField(max_length=100, verbose_name='адрес доставки')
     status = models.CharField(max_length=15, choices=STATUSES, default='NEW', verbose_name='статус', db_index=True)
     comment = models.TextField(verbose_name='комментарий', blank=True)
@@ -123,8 +125,8 @@ class OrderItem(models.Model):
         MinValueValidator(1), MaxValueValidator(50)
         ]
     )
-    amount = models.DecimalField(verbose_name='сумма', max_digits=8, decimal_places=2, null=False,
-        validators=[MinValueValidator(1)]
+    total_price = models.DecimalField(verbose_name='сумма', max_digits=8, decimal_places=2,
+        validators=[MinValueValidator(1)], help_text='Цена суммарно (цена * количество)'
         )
 
     def __str__(self):

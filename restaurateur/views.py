@@ -109,13 +109,13 @@ def view_orders(request):
     restaurants_items = RestaurantMenuItem.objects.filter(availability=True).select_related('restaurant', 'product')
     restraunts_menu = defaultdict(set)
     for item in restaurants_items:
-        restraunts_menu[(item.restaurant.id, item.restaurant.name, item.restaurant.address)].add(item.product.id)
+        restraunts_menu[(item.restaurant.id, item.restaurant.name, item.restaurant.address)].add(item.product_id)
 
     orders = Order.objects.fetch_with_order_cost().prefetch_related('order_items__product')
 
     for order in orders:
         order.restaurants = []
-        order_products = set(item.product.id for item in order.order_items.all())
+        order_products = set(item.product_id for item in order.order_items.all())
 
         for item in restraunts_menu.items():
             restaurant, restaurant_products = item

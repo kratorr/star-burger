@@ -2,10 +2,10 @@ import os
 
 import dj_database_url
 
-from pathlib import Path
-
 from environs import Env
 from dotenv import load_dotenv
+from git import Repo
+
 
 load_dotenv()
 
@@ -46,6 +46,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'rollbar.contrib.django.middleware.RollbarNotifierMiddlewareExcluding404',
 ]
 
 ROOT_URLCONF = 'star_burger.urls'
@@ -139,3 +140,11 @@ CACHES = {
 }
 
 PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
+
+
+ROLLBAR = {
+    'access_token': env.str('ROLLBAR_TOKEN', default=None),
+    'environment': 'development' if DEBUG else 'production',
+    'branch': Repo(path=BASE_DIR).active_branch.name,
+    'root': BASE_DIR,
+}

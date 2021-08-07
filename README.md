@@ -142,6 +142,7 @@ parcel build bundles-src/index.js -d bundles --public-url="./"
 - `ALLOWED_HOSTS` — [см. документацию Django](https://docs.djangoproject.com/en/3.1/ref/settings/#allowed-hosts)
 - `GEOCODER_API_KEY` — Ключ от Yandex API Geocoder, можно получить бесплатно [см. документацию Yandex](https://yandex.ru/dev/maps/geocoder/)
 - `ROLLBAR_TOKEN` — Ключ от Rollbar, можно получить бесплатно [Rollbar](https://rollbar.com/)
+- `DATABASE_URL` — URL для подключения к БД, пример "postgres://postgres:qwerty123@localhost:5432/postgres"
 
 ## Цели проекта
 

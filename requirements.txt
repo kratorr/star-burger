@@ -11,3 +11,4 @@ django-phonenumber-field==5.0.0
 phonenumbers==8.12.20
 rollbar==0.16.1
 GitPython==3.1.18
+dj-database-url==0.5.0

@@ -144,6 +144,12 @@ parcel build bundles-src/index.js -d bundles --public-url="./"
 - `ROLLBAR_TOKEN` — Ключ от Rollbar, можно получить бесплатно [Rollbar](https://rollbar.com/)
 - `DATABASE_URL` — URL для подключения к БД, пример "postgres://postgres:qwerty123@localhost:5432/postgres"
 
+Для удобства написать скрипт в папке с проектом, в котором разместить скачивание кода, сборка фронта и статики.
+После коммита останется запутсить скрипт для деплоя.
+```
+/opt/projects/star-burger/deploy_start_burger.sh
+```
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).

@@ -150,6 +150,16 @@ parcel build bundles-src/index.js -d bundles --public-url="./"
 /opt/projects/star-burger/deploy_start_burger.sh
 ```
 
+Данные сервера:
+
+- `Домен` -  starburger.xyz.
+- `IP` - 140.238.209.236
+- `Пользователь` - ubuntu
+- `Порт` - 22
+
+```
+
+
 ## Цели проекта
 
 Код написан в учебных целях — это урок в курсе по Python и веб-разработке на сайте [Devman](https://dvmn.org). За основу был взят код проекта [FoodCart](https://github.com/Saibharath79/FoodCart).

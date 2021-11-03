@@ -141,7 +141,7 @@ PHONENUMBER_DB_FORMAT = 'INTERNATIONAL'
 
 ROLLBAR = {
     'access_token': env.str('ROLLBAR_TOKEN', default=None),
-    'environment': 'development' if DEBUG else 'production',
+    'environment': env.str('ROLLBAR_ENVIRONMENT', default=None),
     'branch': Repo(path=BASE_DIR).active_branch.name,
     'root': BASE_DIR,
 }
